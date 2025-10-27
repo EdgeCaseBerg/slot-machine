@@ -55,20 +55,21 @@ public class SymbolNameMap {
         return redSeven;
     }
 
-    public static boolean isRed(String symbol) {
-        return false;
+    public boolean isRed(String symbol) {
+        return getRedSeven().equals(symbol) || getOneBar().equals(symbol);
     }
-    public static boolean isBlue(String symbol) {
-        return false;
+    public boolean isBlue(String symbol) {
+        return getBlueSeven().equals(symbol) || getThreeBar().equals(symbol);
     }
-    public static boolean isWhite(String symbol) {
-        return false;
+    public boolean isWhite(String symbol) {
+        // Blank is NOT white, otherwise the payout of blankblankblank would make no sense
+        return getWhiteSeven().equals(symbol) || getTwoBar().equals(symbol);
     }
-    public static boolean isBar(String symbol) {
-        return false;
+    public boolean isBar(String symbol) {
+        return getOneBar().equals(symbol) || getTwoBar().equals(symbol) || getThreeBar().equals(symbol);
     }
-    public static boolean isSeven(String symbol) {
-        return false;
+    public boolean isSeven(String symbol) {
+        return getRedSeven().equals(symbol) || getWhiteSeven().equals(symbol) || getBlueSeven().equals(symbol);
     }
 
 }
