@@ -54,4 +54,21 @@ public class SymbolNameMap {
     public String getRedSeven() {
         return redSeven;
     }
+
+    public static boolean isRed(String symbol) {
+        return false;
+    }
+    public static boolean isBlue(String symbol) {
+        return false;
+    }
+    public static boolean isWhite(String symbol) {
+        return false;
+    }
+    public static boolean isBar(String symbol) {
+        return false;
+    }
+    public static boolean isSeven(String symbol) {
+        return false;
+    }
+
 }
