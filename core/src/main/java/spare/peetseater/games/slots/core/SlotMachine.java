@@ -43,7 +43,6 @@ public class SlotMachine {
         currentReelIndicies[1] = spunReelIndicices[1];
         currentReelIndicies[2] = spunReelIndicices[2];
 
-        // Payout table to come :)
         return payoutTable.payoutFor(
             first.getCurrentSymbol(),
             second.getCurrentSymbol(),
