@@ -27,6 +27,26 @@ allprojects {
   }
 }
 
+configure(":core") {
+  apply plugin: 'java-library'
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.10.0')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.10.0')
+  }
+   test {
+    useJUnitPlatform()
+    testLogging {
+      events "passed", "skipped", "failed"
+    }
+  }
+
+  sourceSets.test.java.srcDirs = [ "test/" ]
+}
+
+
 configure(subprojects) {
   apply plugin: 'java-library'
   sourceCompatibility = 8
