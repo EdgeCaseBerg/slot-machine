@@ -1,8 +1,6 @@
 package spare.peetseater.games.slots.core;
 
 public class FirstReel extends Reel {
-    protected String[] symbols;
-
     public FirstReel(SymbolNameMap symbolNames) {
         super(symbolNames);
     }
