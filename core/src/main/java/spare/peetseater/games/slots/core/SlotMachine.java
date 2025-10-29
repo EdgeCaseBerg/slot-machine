@@ -2,9 +2,9 @@ package spare.peetseater.games.slots.core;
 
 public class SlotMachine {
 
-    private Reel first;
-    private Reel second;
-    private Reel third;
+    private final Reel first;
+    private final Reel second;
+    private final Reel third;
 
     private int[] currentReelIndicies;
     private int[] spunReelIndicices;
@@ -48,5 +48,15 @@ public class SlotMachine {
             second.getCurrentSymbol(),
             third.getCurrentSymbol()
         );
+    }
+
+    public Reel getFirstReel() {
+        return first;
+    }
+    public Reel getSecondReel() {
+        return second;
+    }
+    public Reel getThirdReel() {
+        return third;
     }
 }
