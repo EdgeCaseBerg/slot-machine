@@ -3,15 +3,17 @@ package spare.peetseater.games;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import spare.peetseater.games.slots.core.SymbolNameMap;
+import spare.peetseater.games.slots.ui.ReelSymbol;
 
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
@@ -21,12 +23,14 @@ public class FirstScreen implements Screen {
     Viewport viewport;
     Texture[] textures = new Texture[6];
     Texture machineMask;
+    List<ReelSymbol> symbolsOnReels;
+    float maxYForSpinning;
 
     @Override
     public void show() {
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(1280, 720, camera);
+        viewport = new FitViewport(32, 18, camera);
         camera.setToOrtho(false);
         camera.update();
         textures[0] = new Texture(Gdx.files.internal("RedSeven.png"));
@@ -36,27 +40,54 @@ public class FirstScreen implements Screen {
         textures[4] = new Texture(Gdx.files.internal("TwoBar.png"));
         textures[5] = new Texture(Gdx.files.internal("ThreeBar.png"));
         machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
+        symbolsOnReels = new LinkedList<>();
+
+        for (int i = 0; i < 3; i++) {
+            float x = 8 + i * 6;
+            for (int j = 0; j < textures.length; j++) {
+                float y = 3 + j * 4;
+                symbolsOnReels.add(new ReelSymbol(x, y, textures[j], 4, 4));
+                maxYForSpinning = y - 3;
+            }
+        }
+
     }
 
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
+        ScreenUtils.clear(Color.BLACK);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        float ratio = 16f/9f;
-        for (int i = 0; i < 3; i++) {
-            float x = 20 * 9 + 20 * 7 * i;
-            for (int j = 0; j < textures.length; j++) {
-                float y = 20 * 4 + j * 80;
-                batch.draw(textures[j], x * ratio, y * ratio, 80 * ratio, 80 * ratio);
-            }
+        for (ReelSymbol symbolTexture : symbolsOnReels) {
+            symbolTexture.update(delta);
+            symbolTexture.draw(batch, textures.length * 4);
         }
-        batch.draw(machineMask, 0, 0, 1280, 720);
+        batch.draw(machineMask, 0, 0, 32, 18);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            symbolsOnReels.clear();
+            for (int i = 0; i < 3; i++) {
+                float x = 8 + i * 6;
+                for (int j = 0; j < textures.length; j++) {
+                    float y = 3 + j * 4;
+                    symbolsOnReels.add(new ReelSymbol(x, y, textures[j], 4 , 4));
+                    maxYForSpinning = y - 3;
+                }
+            }
+            for (ReelSymbol symbolTexture : symbolsOnReels) {
+                symbolTexture.setDestination(
+                    symbolTexture.getCurrentX(),
+                    symbolTexture.getCurrentY() + maxYForSpinning * 5,
+                    10f
+                );
+            }
         }
     }
 
@@ -67,6 +98,8 @@ public class FirstScreen implements Screen {
         if(width <= 0 || height <= 0) return;
 
         // Resize your screen here. The parameters represent the new window size.
+        viewport.update(width, height);
+        viewport.apply(true);
     }
 
     @Override
