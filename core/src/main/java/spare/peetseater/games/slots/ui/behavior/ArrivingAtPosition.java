@@ -17,7 +17,7 @@ public class ArrivingAtPosition implements PositionBehavior {
 
     public void update(float delta) {
         accumulator.update(delta);
-        this.current =  this.current.interpolate(end, accumulator.getProgress(), Interpolation.linear);
+        this.current.interpolate(end, accumulator.getProgress(), Interpolation.linear);
     }
 
     public Vector2 getPosition() {
