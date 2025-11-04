@@ -7,13 +7,19 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import spare.peetseater.games.slots.ui.ReelSymbol;
+import spare.peetseater.games.slots.ui.TimedAccumulator;
+import spare.peetseater.games.slots.ui.behavior.ArrivingAtPosition;
+import spare.peetseater.games.slots.ui.behavior.VerticallySpinningPosition;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
@@ -25,6 +31,7 @@ public class FirstScreen implements Screen {
     Texture machineMask;
     List<ReelSymbol> symbolsOnReels;
     float maxYForSpinning;
+    Optional<TimedAccumulator> maybeSpin;
 
     @Override
     public void show() {
@@ -41,6 +48,7 @@ public class FirstScreen implements Screen {
         textures[5] = new Texture(Gdx.files.internal("ThreeBar.png"));
         machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
         symbolsOnReels = new LinkedList<>();
+        maybeSpin = Optional.empty();
 
         for (int i = 0; i < 3; i++) {
             float x = 8 + i * 6;
@@ -50,7 +58,6 @@ public class FirstScreen implements Screen {
                 maxYForSpinning = y - 3;
             }
         }
-
     }
 
     @Override
@@ -60,6 +67,10 @@ public class FirstScreen implements Screen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+
+        maybeSpin.ifPresent((spin) -> {
+            spin.update(delta);
+        });
         for (ReelSymbol symbolTexture : symbolsOnReels) {
             symbolTexture.update(delta);
             symbolTexture.draw(batch, textures.length * 4);
@@ -72,22 +83,35 @@ public class FirstScreen implements Screen {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            symbolsOnReels.clear();
+            maybeSpin = Optional.of(new TimedAccumulator(3f));
+            for (ReelSymbol symbolTexture : symbolsOnReels) {
+                symbolTexture.setPositionBehavior(
+                    new VerticallySpinningPosition(
+                        symbolTexture.getPosition(),
+                        4 * maxYForSpinning,
+                        new Vector2(-1, maxYForSpinning)
+                    )
+                );
+            }
+        }
+
+        if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
+            Iterator<ReelSymbol> iter = symbolsOnReels.iterator();
             for (int i = 0; i < 3; i++) {
                 float x = 8 + i * 6;
                 for (int j = 0; j < textures.length; j++) {
                     float y = 3 + j * 4;
-                    symbolsOnReels.add(new ReelSymbol(x, y, textures[j], 4 , 4));
-                    maxYForSpinning = y - 3;
+                    ReelSymbol reelSymbol = iter.next();
+                    reelSymbol.setPositionBehavior(
+                        new ArrivingAtPosition(
+                            reelSymbol.getPosition(),
+                            new Vector2(x, y),
+                            1f
+                        )
+                    );
                 }
             }
-            for (ReelSymbol symbolTexture : symbolsOnReels) {
-                symbolTexture.setDestination(
-                    symbolTexture.getCurrentX(),
-                    symbolTexture.getCurrentY() + maxYForSpinning * 5,
-                    10f
-                );
-            }
+            maybeSpin = Optional.empty();
         }
     }
 
