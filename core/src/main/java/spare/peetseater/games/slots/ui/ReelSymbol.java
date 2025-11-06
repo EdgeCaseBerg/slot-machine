@@ -34,4 +34,12 @@ public class ReelSymbol {
     public void setPositionBehavior(PositionBehavior behavior) {
         this.positionBehavior = behavior;
     }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
 }

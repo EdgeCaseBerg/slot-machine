@@ -31,4 +31,8 @@ public abstract class Reel {
     public String getCurrentSymbol() {
         return getSymbol(idx);
     }
+
+    public int getSize() {
+        return symbols.length;
+    }
 }
