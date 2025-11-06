@@ -11,15 +11,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import spare.peetseater.games.slots.core.SlotMachine;
+import spare.peetseater.games.slots.core.SymbolNameMap;
+import spare.peetseater.games.slots.ui.ReelColumn;
 import spare.peetseater.games.slots.ui.ReelSymbol;
 import spare.peetseater.games.slots.ui.TimedAccumulator;
 import spare.peetseater.games.slots.ui.behavior.ArrivingAtPosition;
 import spare.peetseater.games.slots.ui.behavior.VerticallySpinningPosition;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
@@ -27,14 +27,27 @@ public class FirstScreen implements Screen {
     SpriteBatch batch;
     OrthographicCamera camera;
     Viewport viewport;
-    Texture[] textures = new Texture[6];
+    Texture[] textures = new Texture[7];
+    Map<String, Texture> symbolNameToTexture;
     Texture machineMask;
     List<ReelSymbol> symbolsOnReels;
     float maxYForSpinning;
     Optional<TimedAccumulator> maybeSpin;
+    SlotMachine slotMachine;
+    private ReelColumn testReel;
 
     @Override
     public void show() {
+        SymbolNameMap symbolMap = new SymbolNameMap(
+            "blank",
+            "one_bar",
+            "two_bar",
+            "three_bar",
+            "blue_seven",
+            "white_seven",
+            "red_seven"
+        );
+        slotMachine = new SlotMachine(symbolMap);
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(32, 18, camera);
@@ -46,6 +59,21 @@ public class FirstScreen implements Screen {
         textures[3] = new Texture(Gdx.files.internal("OneBar.png"));
         textures[4] = new Texture(Gdx.files.internal("TwoBar.png"));
         textures[5] = new Texture(Gdx.files.internal("ThreeBar.png"));
+        textures[6] = new Texture(Gdx.files.internal("Blank.png"));
+        symbolNameToTexture = new Hashtable<>();
+        symbolNameToTexture.put(symbolMap.getRedSeven(), textures[0]);
+        symbolNameToTexture.put(symbolMap.getWhiteSeven(), textures[1]);
+        symbolNameToTexture.put(symbolMap.getBlueSeven(), textures[2]);
+        symbolNameToTexture.put(symbolMap.getOneBar(), textures[3]);
+        symbolNameToTexture.put(symbolMap.getTwoBar(), textures[4]);
+        symbolNameToTexture.put(symbolMap.getThreeBar(), textures[5]);
+        symbolNameToTexture.put(symbolMap.getBlank(), textures[6]);
+        testReel = new ReelColumn(
+            slotMachine.getFirstReel(),
+            new Vector2(1, 3),
+            new Vector2(4, 12),
+            symbolNameToTexture
+        );
         machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
         symbolsOnReels = new LinkedList<>();
         maybeSpin = Optional.empty();
@@ -75,7 +103,11 @@ public class FirstScreen implements Screen {
             symbolTexture.update(delta);
             symbolTexture.draw(batch, textures.length * 4);
         }
+
         batch.draw(machineMask, 0, 0, 32, 18);
+        testReel.update(delta);
+        testReel.draw(batch);
+
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -93,9 +125,11 @@ public class FirstScreen implements Screen {
                     )
                 );
             }
+            testReel.startSpinningReel();
         }
 
         if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
+            testReel.stopReel();
             Iterator<ReelSymbol> iter = symbolsOnReels.iterator();
             for (int i = 0; i < 3; i++) {
                 float x = 8 + i * 6;
