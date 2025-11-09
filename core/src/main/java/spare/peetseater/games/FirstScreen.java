@@ -30,11 +30,11 @@ public class FirstScreen implements Screen {
     Texture[] textures = new Texture[7];
     Map<String, Texture> symbolNameToTexture;
     Texture machineMask;
-    List<ReelSymbol> symbolsOnReels;
-    float maxYForSpinning;
     Optional<TimedAccumulator> maybeSpin;
     SlotMachine slotMachine;
-    private ReelColumn testReel;
+    private ReelColumn firstReel;
+    private ReelColumn secondReel;
+    private ReelColumn thirdReel;
 
     @Override
     public void show() {
@@ -68,24 +68,28 @@ public class FirstScreen implements Screen {
         symbolNameToTexture.put(symbolMap.getTwoBar(), textures[4]);
         symbolNameToTexture.put(symbolMap.getThreeBar(), textures[5]);
         symbolNameToTexture.put(symbolMap.getBlank(), textures[6]);
-        testReel = new ReelColumn(
+        Vector2 reelWindowSize = new Vector2(4, 12);
+        float reelBottomLeftY = 3;
+        firstReel = new ReelColumn(
             slotMachine.getFirstReel(),
-            new Vector2(1, 3),
-            new Vector2(4, 12),
+            new Vector2(8, reelBottomLeftY),
+            reelWindowSize,
+            symbolNameToTexture
+        );
+        secondReel = new ReelColumn(
+            slotMachine.getSecondReel(),
+            new Vector2(14, reelBottomLeftY),
+            reelWindowSize,
+            symbolNameToTexture
+        );
+        thirdReel = new ReelColumn(
+            slotMachine.getThirdReel(),
+            new Vector2(20, reelBottomLeftY),
+            reelWindowSize,
             symbolNameToTexture
         );
         machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
-        symbolsOnReels = new LinkedList<>();
         maybeSpin = Optional.empty();
-
-        for (int i = 0; i < 3; i++) {
-            float x = 8 + i * 6;
-            for (int j = 0; j < textures.length; j++) {
-                float y = 3 + j * 4;
-                symbolsOnReels.add(new ReelSymbol(x, y, textures[j], 4, 4));
-                maxYForSpinning = y - 3;
-            }
-        }
     }
 
     @Override
@@ -99,14 +103,15 @@ public class FirstScreen implements Screen {
         maybeSpin.ifPresent((spin) -> {
             spin.update(delta);
         });
-        for (ReelSymbol symbolTexture : symbolsOnReels) {
-            symbolTexture.update(delta);
-            symbolTexture.draw(batch, textures.length * 4);
-        }
 
+        firstReel.update(delta);
+        secondReel.update(delta);
+        thirdReel.update(delta);
+
+        firstReel.draw(batch);
+        secondReel.draw(batch);
+        thirdReel.draw(batch);
         batch.draw(machineMask, 0, 0, 32, 18);
-        testReel.update(delta);
-        testReel.draw(batch);
 
         batch.end();
 
@@ -116,36 +121,19 @@ public class FirstScreen implements Screen {
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             maybeSpin = Optional.of(new TimedAccumulator(3f));
-            for (ReelSymbol symbolTexture : symbolsOnReels) {
-                symbolTexture.setPositionBehavior(
-                    new VerticallySpinningPosition(
-                        symbolTexture.getPosition(),
-                        4 * maxYForSpinning,
-                        new Vector2(-1, maxYForSpinning)
-                    )
-                );
-            }
-            testReel.startSpinningReel();
+            slotMachine.spin();
+            firstReel.startSpinningReel();
+            secondReel.startSpinningReel();
+            thirdReel.startSpinningReel();
         }
 
         if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
-            testReel.stopReel();
-            Iterator<ReelSymbol> iter = symbolsOnReels.iterator();
-            for (int i = 0; i < 3; i++) {
-                float x = 8 + i * 6;
-                for (int j = 0; j < textures.length; j++) {
-                    float y = 3 + j * 4;
-                    ReelSymbol reelSymbol = iter.next();
-                    reelSymbol.setPositionBehavior(
-                        new ArrivingAtPosition(
-                            reelSymbol.getPosition(),
-                            new Vector2(x, y),
-                            1f
-                        )
-                    );
-                }
-            }
+            firstReel.stopReel();
+            secondReel.stopReel();
+            thirdReel.stopReel();
             maybeSpin = Optional.empty();
+            int payout = slotMachine.payout();
+            Gdx.app.log("PAYOUT", "$" + payout);
         }
     }
 
