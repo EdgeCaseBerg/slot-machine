@@ -27,7 +27,6 @@ public class FirstScreen implements Screen {
     SpriteBatch batch;
     OrthographicCamera camera;
     Viewport viewport;
-    Texture[] textures = new Texture[7];
     Map<String, Texture> symbolNameToTexture;
     Texture machineMask;
     Optional<TimedAccumulator> maybeSpin;
@@ -53,21 +52,14 @@ public class FirstScreen implements Screen {
         viewport = new FitViewport(32, 18, camera);
         camera.setToOrtho(false);
         camera.update();
-        textures[0] = new Texture(Gdx.files.internal("RedSeven.png"));
-        textures[1] = new Texture(Gdx.files.internal("WhiteSeven.png"));
-        textures[2] = new Texture(Gdx.files.internal("BlueSeven.png"));
-        textures[3] = new Texture(Gdx.files.internal("OneBar.png"));
-        textures[4] = new Texture(Gdx.files.internal("TwoBar.png"));
-        textures[5] = new Texture(Gdx.files.internal("ThreeBar.png"));
-        textures[6] = new Texture(Gdx.files.internal("Blank.png"));
         symbolNameToTexture = new Hashtable<>();
-        symbolNameToTexture.put(symbolMap.getRedSeven(), textures[0]);
-        symbolNameToTexture.put(symbolMap.getWhiteSeven(), textures[1]);
-        symbolNameToTexture.put(symbolMap.getBlueSeven(), textures[2]);
-        symbolNameToTexture.put(symbolMap.getOneBar(), textures[3]);
-        symbolNameToTexture.put(symbolMap.getTwoBar(), textures[4]);
-        symbolNameToTexture.put(symbolMap.getThreeBar(), textures[5]);
-        symbolNameToTexture.put(symbolMap.getBlank(), textures[6]);
+        symbolNameToTexture.put(symbolMap.getRedSeven(), new Texture(Gdx.files.internal("RedSeven.png")));
+        symbolNameToTexture.put(symbolMap.getWhiteSeven(), new Texture(Gdx.files.internal("WhiteSeven.png")));
+        symbolNameToTexture.put(symbolMap.getBlueSeven(), new Texture(Gdx.files.internal("BlueSeven.png")));
+        symbolNameToTexture.put(symbolMap.getOneBar(), new Texture(Gdx.files.internal("OneBar.png")));
+        symbolNameToTexture.put(symbolMap.getTwoBar(), new Texture(Gdx.files.internal("TwoBar.png")));
+        symbolNameToTexture.put(symbolMap.getThreeBar(), new Texture(Gdx.files.internal("ThreeBar.png")));
+        symbolNameToTexture.put(symbolMap.getBlank(), new Texture(Gdx.files.internal("Blank.png")));
         Vector2 reelWindowSize = new Vector2(4, 12);
         float reelBottomLeftY = 3;
         firstReel = new ReelColumn(
