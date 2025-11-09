@@ -18,11 +18,13 @@ public class ReelColumn {
     private final ReelIterator reelSymbolsToCome;
     private final float reelSize;
     private boolean isSpinning;
+    private float speed;
 
     public ReelColumn(Reel reel, Vector2 position, Vector2 windowSize, Map<String, Texture> symbolToTextureMap) {
         this.reel = reel;
         this.reelSymbolsToCome = new ReelIterator(this.reel);
         this.reelSize = 4;
+        this.speed = 24;
         this.position = position;
         this.windowSize = windowSize;
         this.isSpinning = false;
@@ -41,7 +43,6 @@ public class ReelColumn {
             reelSize, reelSize
         );
         if (isSpinning) {
-            int speed = 24;
             nextReelSymbol.setPositionBehavior(
                 new MovingAtVelocity(nextReelSymbol.getPosition(), speed)
             );
@@ -86,7 +87,6 @@ public class ReelColumn {
 
     public void startSpinningReel() {
         isSpinning = true;
-        float speed = 24;
         for (ReelSymbol symbol : symbols) {
             symbol.setPositionBehavior(
                 new MovingAtVelocity(symbol.getPosition(), speed)
