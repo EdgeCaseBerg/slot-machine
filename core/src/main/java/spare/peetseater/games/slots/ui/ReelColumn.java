@@ -106,8 +106,7 @@ public class ReelColumn {
             currentBottommostY = Math.min(currentBottommostY, symbol.getPosition().y);
         }
 
-        int middleRow = reel.getIdx();
-        String symbolToLandOn = reel.getSymbol(middleRow);
+        String symbolToLandOn = reel.getCurrentSymbol();
         Gdx.app.log("STOP ON ", symbolToLandOn);
         String symbolAdded;
         do {
@@ -127,7 +126,7 @@ public class ReelColumn {
         iter = symbols.descendingIterator();
         int i = 0;
         float time = 1f;
-        int numSymbols = symbols.size();
+        float stopReelWithinSeconds = time * symbols.size();
         for (Iterator<ReelSymbol> it = iter; it.hasNext(); i++) {
             float stoppingPosition = position.y + i * reelSize;
             ReelSymbol symbol = iter.next();
@@ -135,7 +134,7 @@ public class ReelColumn {
                 new ArrivingAtPosition(
                     symbol.getPosition(),
                     new Vector2(position.x, stoppingPosition),
-                    time * numSymbols
+                    stopReelWithinSeconds
                 )
             );
         }
