@@ -58,22 +58,26 @@ public class ReelsPanel {
         secondReel.update(delta);
         thirdReel.update(delta);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            maybeSpin = Optional.of(new TimedAccumulator(3f));
-            slotMachine.spin();
-            firstReel.startSpinningReel();
-            secondReel.startSpinningReel();
-            thirdReel.startSpinningReel();
-        }
-
         if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
-            firstReel.stopReel();
-            secondReel.stopReel();
-            thirdReel.stopReel();
-            maybeSpin = Optional.empty();
-            int payout = slotMachine.payout();
-            Gdx.app.log("PAYOUT", "$" + payout);
+            stopSpinning();
         }
+    }
+
+    public void stopSpinning() {
+        firstReel.stopReel();
+        secondReel.stopReel();
+        thirdReel.stopReel();
+        maybeSpin = Optional.empty();
+        int payout = slotMachine.payout();
+        Gdx.app.log("PAYOUT", "$" + payout);
+    }
+
+    public void startSpinning() {
+        maybeSpin = Optional.of(new TimedAccumulator(3f));
+        slotMachine.spin();
+        firstReel.startSpinningReel();
+        secondReel.startSpinningReel();
+        thirdReel.startSpinningReel();
     }
 
     public void draw(SpriteBatch batch) {

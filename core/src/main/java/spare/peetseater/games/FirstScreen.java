@@ -15,6 +15,7 @@ import spare.peetseater.games.slots.core.SlotMachine;
 import spare.peetseater.games.slots.core.SymbolNameMap;
 import spare.peetseater.games.slots.ui.ReelColumn;
 import spare.peetseater.games.slots.ui.ReelSymbol;
+import spare.peetseater.games.slots.ui.ReelsPanel;
 import spare.peetseater.games.slots.ui.TimedAccumulator;
 import spare.peetseater.games.slots.ui.behavior.ArrivingAtPosition;
 import spare.peetseater.games.slots.ui.behavior.VerticallySpinningPosition;
@@ -28,12 +29,8 @@ public class FirstScreen implements Screen {
     OrthographicCamera camera;
     Viewport viewport;
     Map<String, Texture> symbolNameToTexture;
-    Texture machineMask;
-    Optional<TimedAccumulator> maybeSpin;
     SlotMachine slotMachine;
-    private ReelColumn firstReel;
-    private ReelColumn secondReel;
-    private ReelColumn thirdReel;
+    private ReelsPanel reelsPanel;
 
     @Override
     public void show() {
@@ -60,28 +57,12 @@ public class FirstScreen implements Screen {
         symbolNameToTexture.put(symbolMap.getTwoBar(), new Texture(Gdx.files.internal("TwoBar.png")));
         symbolNameToTexture.put(symbolMap.getThreeBar(), new Texture(Gdx.files.internal("ThreeBar.png")));
         symbolNameToTexture.put(symbolMap.getBlank(), new Texture(Gdx.files.internal("Blank.png")));
-        Vector2 reelWindowSize = new Vector2(4, 12);
-        float reelBottomLeftY = 3;
-        firstReel = new ReelColumn(
-            slotMachine.getFirstReel(),
-            new Vector2(8, reelBottomLeftY),
-            reelWindowSize,
-            symbolNameToTexture
+        Texture machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
+        reelsPanel = new ReelsPanel(
+            slotMachine,
+            symbolNameToTexture,
+            machineMask
         );
-        secondReel = new ReelColumn(
-            slotMachine.getSecondReel(),
-            new Vector2(14, reelBottomLeftY),
-            reelWindowSize,
-            symbolNameToTexture
-        );
-        thirdReel = new ReelColumn(
-            slotMachine.getThirdReel(),
-            new Vector2(20, reelBottomLeftY),
-            reelWindowSize,
-            symbolNameToTexture
-        );
-        machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
-        maybeSpin = Optional.empty();
     }
 
     @Override
@@ -89,22 +70,11 @@ public class FirstScreen implements Screen {
         // Draw your screen here. "delta" is the time since last render in seconds.
         ScreenUtils.clear(Color.BLACK);
         camera.update();
+        reelsPanel.update(delta);
+
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-
-        maybeSpin.ifPresent((spin) -> {
-            spin.update(delta);
-        });
-
-        firstReel.update(delta);
-        secondReel.update(delta);
-        thirdReel.update(delta);
-
-        firstReel.draw(batch);
-        secondReel.draw(batch);
-        thirdReel.draw(batch);
-        batch.draw(machineMask, 0, 0, 32, 18);
-
+        reelsPanel.draw(batch);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -112,20 +82,7 @@ public class FirstScreen implements Screen {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            maybeSpin = Optional.of(new TimedAccumulator(3f));
-            slotMachine.spin();
-            firstReel.startSpinningReel();
-            secondReel.startSpinningReel();
-            thirdReel.startSpinningReel();
-        }
-
-        if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
-            firstReel.stopReel();
-            secondReel.stopReel();
-            thirdReel.stopReel();
-            maybeSpin = Optional.empty();
-            int payout = slotMachine.payout();
-            Gdx.app.log("PAYOUT", "$" + payout);
+            reelsPanel.startSpinning();
         }
     }
 
