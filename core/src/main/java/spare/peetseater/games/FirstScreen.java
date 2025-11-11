@@ -7,18 +7,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import spare.peetseater.games.slots.core.SlotMachine;
 import spare.peetseater.games.slots.core.SymbolNameMap;
-import spare.peetseater.games.slots.ui.ReelColumn;
-import spare.peetseater.games.slots.ui.ReelSymbol;
 import spare.peetseater.games.slots.ui.ReelsPanel;
-import spare.peetseater.games.slots.ui.TimedAccumulator;
-import spare.peetseater.games.slots.ui.behavior.ArrivingAtPosition;
-import spare.peetseater.games.slots.ui.behavior.VerticallySpinningPosition;
 
 import java.util.*;
 
@@ -31,6 +26,11 @@ public class FirstScreen implements Screen {
     Map<String, Texture> symbolNameToTexture;
     SlotMachine slotMachine;
     private ReelsPanel reelsPanel;
+    private Texture spinBtn;
+    private Texture betMaxBtn;
+    private Texture bet1Btn;
+    private TextureRegion[] digits;
+    private float accum;
 
     @Override
     public void show() {
@@ -63,6 +63,20 @@ public class FirstScreen implements Screen {
             symbolNameToTexture,
             machineMask
         );
+
+        bet1Btn = new Texture(Gdx.files.internal("Bet1.png"));
+        betMaxBtn = new Texture(Gdx.files.internal("BetMax.png"));
+        spinBtn = new Texture(Gdx.files.internal("spin.png"));
+        Texture allDigits = new Texture(Gdx.files.internal("digits.png"));
+        TextureRegion[][] allRowsAndColumns = TextureRegion.split(allDigits, 300, 200);
+        digits = new TextureRegion[10];
+        int d = 0;
+        for (int i = 0; i < allRowsAndColumns.length; i++) {
+            for (int j = 0; j < allRowsAndColumns[i].length; j++) {
+                digits[d] = allRowsAndColumns[i][j];
+                d++;
+            }
+        }
     }
 
     @Override
@@ -75,6 +89,13 @@ public class FirstScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         reelsPanel.draw(batch);
+
+        batch.draw(bet1Btn, 1, 14, 5, 3);
+        batch.draw(betMaxBtn, 1, 10, 5, 3);
+        batch.draw(spinBtn, 1, 4, 5, 5);
+        accum += delta;
+        batch.draw(digits[(int) accum % 10], 2, 1, 3, 2);
+
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
