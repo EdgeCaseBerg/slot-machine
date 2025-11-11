@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.MathUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PrimitiveIterator;
+import java.util.stream.IntStream;
 
 public class NumberRenderer {
     private final TextureRegion[] digits;
@@ -25,24 +27,19 @@ public class NumberRenderer {
 
     public void draw(SpriteBatch batch, int number, float x, float y) {
         // We will hard code the limit for now.
-        assert(number >= 0);
+        assert (number >= 0);
 
         List<Integer> numbersToRender = new LinkedList<>();
         numbersToRender.add(number % 10);
 
-        int i = 1;
-        int modulo = 100;
-        while (modulo < number) {
-            int amountForPlace = (number % modulo) / 10 * i;
-            numbersToRender.add(amountForPlace);
-            modulo *= 10;
-            i++;
-        }
+        char[] characters = String.valueOf(number).toCharArray();
 
-        for (int j = 0; j < numbersToRender.size(); j++) {
-            int digit = numbersToRender.get(j);
-            // TODO spacing.
-            batch.draw(digits[digit], x + j * 3, y, 3, 2);
+        int i = 0;
+        for (char c : characters) {
+            int digit = c - 48;
+            // % 2 because spacing on our font digits is WIDE but I don't want to change the width of the tile.
+            batch.draw(digits[digit], x + (float) (i * 3) /2, y, 3, 2);
+            i++;
         }
     }
 }

@@ -89,7 +89,7 @@ public class FirstScreen implements Screen {
         batch.draw(spinBtn, 1, 4, 5, 5);
         accum += delta;
         numberRenderer.draw(batch, (int) accum % 10, 2, 1);
-
+        numberRenderer.draw(batch, 1234567890, 8, 1);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
