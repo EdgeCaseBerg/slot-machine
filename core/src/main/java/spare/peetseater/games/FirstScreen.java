@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import spare.peetseater.games.slots.core.SlotMachine;
 import spare.peetseater.games.slots.core.SymbolNameMap;
+import spare.peetseater.games.slots.ui.NumberRenderer;
 import spare.peetseater.games.slots.ui.ReelsPanel;
 
 import java.util.*;
@@ -31,6 +32,7 @@ public class FirstScreen implements Screen {
     private Texture bet1Btn;
     private TextureRegion[] digits;
     private float accum;
+    private NumberRenderer numberRenderer;
 
     @Override
     public void show() {
@@ -68,15 +70,7 @@ public class FirstScreen implements Screen {
         betMaxBtn = new Texture(Gdx.files.internal("BetMax.png"));
         spinBtn = new Texture(Gdx.files.internal("spin.png"));
         Texture allDigits = new Texture(Gdx.files.internal("digits.png"));
-        TextureRegion[][] allRowsAndColumns = TextureRegion.split(allDigits, 300, 200);
-        digits = new TextureRegion[10];
-        int d = 0;
-        for (int i = 0; i < allRowsAndColumns.length; i++) {
-            for (int j = 0; j < allRowsAndColumns[i].length; j++) {
-                digits[d] = allRowsAndColumns[i][j];
-                d++;
-            }
-        }
+        numberRenderer = new NumberRenderer(allDigits);
     }
 
     @Override
@@ -94,7 +88,7 @@ public class FirstScreen implements Screen {
         batch.draw(betMaxBtn, 1, 10, 5, 3);
         batch.draw(spinBtn, 1, 4, 5, 5);
         accum += delta;
-        batch.draw(digits[(int) accum % 10], 2, 1, 3, 2);
+        numberRenderer.draw(batch, (int) accum % 10, 2, 1);
 
         batch.end();
 
