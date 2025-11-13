@@ -82,4 +82,10 @@ public class ButtonMultiplexer implements InputProcessor {
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
+
+    public void update(float delta) {
+        for (ClickableButton button : buttons) {
+            button.update(delta);
+        }
+    }
 }

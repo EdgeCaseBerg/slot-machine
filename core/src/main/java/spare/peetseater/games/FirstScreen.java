@@ -117,6 +117,7 @@ public class FirstScreen implements Screen {
         ScreenUtils.clear(Color.BLACK);
         camera.update();
         reelsPanel.update(delta);
+        btnPlexer.update(delta);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
