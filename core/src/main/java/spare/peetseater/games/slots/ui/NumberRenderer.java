@@ -29,9 +29,6 @@ public class NumberRenderer {
         // We will hard code the limit for now.
         assert (number >= 0);
 
-        List<Integer> numbersToRender = new LinkedList<>();
-        numbersToRender.add(number % 10);
-
         char[] characters = String.valueOf(number).toCharArray();
 
         int i = 0;
