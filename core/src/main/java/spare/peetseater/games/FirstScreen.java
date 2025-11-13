@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -15,6 +16,9 @@ import spare.peetseater.games.slots.core.SlotMachine;
 import spare.peetseater.games.slots.core.SymbolNameMap;
 import spare.peetseater.games.slots.ui.NumberRenderer;
 import spare.peetseater.games.slots.ui.ReelsPanel;
+import spare.peetseater.games.slots.ui.button.ButtonMultiplexer;
+import spare.peetseater.games.slots.ui.button.ButtonSubscriber;
+import spare.peetseater.games.slots.ui.button.ClickableButton;
 
 import java.util.*;
 
@@ -27,12 +31,17 @@ public class FirstScreen implements Screen {
     Map<String, Texture> symbolNameToTexture;
     SlotMachine slotMachine;
     private ReelsPanel reelsPanel;
-    private Texture spinBtn;
-    private Texture betMaxBtn;
-    private Texture bet1Btn;
+    private Texture spinBtnTexture;
+    private Texture bet1BtnTexture;
+    private Texture betMaxBtnTexture;
+    private ClickableButton bet1Btn;
+    private ClickableButton betMaxBtn;
     private TextureRegion[] digits;
-    private float accum;
     private NumberRenderer numberRenderer;
+    private int bet;
+    private ClickableButton spinBtn;
+    private Texture allDigits;
+    private ButtonMultiplexer btnPlexer;
 
     @Override
     public void show() {
@@ -66,10 +75,39 @@ public class FirstScreen implements Screen {
             machineMask
         );
 
-        bet1Btn = new Texture(Gdx.files.internal("Bet1.png"));
-        betMaxBtn = new Texture(Gdx.files.internal("BetMax.png"));
-        spinBtn = new Texture(Gdx.files.internal("spin.png"));
-        Texture allDigits = new Texture(Gdx.files.internal("digits.png"));
+        bet1BtnTexture = new Texture(Gdx.files.internal("Bet1.png"));
+        bet1Btn = new ClickableButton(bet1BtnTexture, 1, 14, 5 , 3);
+        bet1Btn.addSubscriber(new ButtonSubscriber() {
+            @Override
+            public void onClick(ClickableButton clickableButton) {
+                bet +=1;
+                if (bet > 5) bet = 1;
+            }
+        });
+        Texture betMaxBtnTexture = new Texture(Gdx.files.internal("BetMax.png"));
+        betMaxBtn = new ClickableButton(betMaxBtnTexture, 1,10,5,3);
+        betMaxBtn.addSubscriber(new ButtonSubscriber() {
+            @Override
+            public void onClick(ClickableButton clickableButton) {
+                bet = 5;
+            }
+        });
+
+        spinBtnTexture = new Texture(Gdx.files.internal("spin.png"));
+        spinBtn = new ClickableButton(spinBtnTexture, 1,4,5,5);
+        spinBtn.addSubscriber(new ButtonSubscriber() {
+            @Override
+            public void onClick(ClickableButton clickableButton) {
+                reelsPanel.startSpinning();
+            }
+        });
+        btnPlexer = new ButtonMultiplexer(camera);
+        btnPlexer.addButton(bet1Btn);
+        btnPlexer.addButton(betMaxBtn);
+        btnPlexer.addButton(spinBtn);
+        Gdx.input.setInputProcessor(btnPlexer);
+
+        allDigits = new Texture(Gdx.files.internal("digits.png"));
         numberRenderer = new NumberRenderer(allDigits);
     }
 
@@ -84,12 +122,10 @@ public class FirstScreen implements Screen {
         batch.begin();
         reelsPanel.draw(batch);
 
-        batch.draw(bet1Btn, 1, 14, 5, 3);
-        batch.draw(betMaxBtn, 1, 10, 5, 3);
-        batch.draw(spinBtn, 1, 4, 5, 5);
-        accum += delta;
-        numberRenderer.draw(batch, (int) accum % 10, 2, 1);
-        numberRenderer.draw(batch, 1234567890, 8, 1);
+        bet1Btn.draw(batch);
+        betMaxBtn.draw(batch);
+        spinBtn.draw(batch);
+        numberRenderer.draw(batch, bet, 2, 1);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -129,6 +165,12 @@ public class FirstScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
+        bet1BtnTexture.dispose();
+        betMaxBtnTexture.dispose();
+        spinBtnTexture.dispose();
+        for (Map.Entry<String, Texture> entry : symbolNameToTexture.entrySet()) {
+            entry.getValue().dispose();
+        }
+        allDigits.dispose();
     }
 }
