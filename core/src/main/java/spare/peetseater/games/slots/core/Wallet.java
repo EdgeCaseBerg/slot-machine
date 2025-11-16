@@ -12,7 +12,7 @@ public class Wallet {
     }
 
     public boolean hasEnoughToBet(int amount) {
-        return amount >= funds;
+        return funds >= amount;
     }
 
     public boolean isBroke() {
