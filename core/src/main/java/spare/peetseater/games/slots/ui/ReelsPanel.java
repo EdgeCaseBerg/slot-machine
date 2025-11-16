@@ -60,6 +60,7 @@ public class ReelsPanel {
 
         if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
             stopSpinning();
+            // emit an event to let the system know to award the amount of money
         }
     }
 

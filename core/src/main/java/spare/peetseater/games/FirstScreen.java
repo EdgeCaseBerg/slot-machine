@@ -8,12 +8,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import spare.peetseater.games.slots.core.SlotMachine;
 import spare.peetseater.games.slots.core.SymbolNameMap;
+import spare.peetseater.games.slots.core.Wallet;
+import spare.peetseater.games.slots.ui.coins.CoinStacksDisplay;
 import spare.peetseater.games.slots.ui.NumberRenderer;
 import spare.peetseater.games.slots.ui.ReelsPanel;
 import spare.peetseater.games.slots.ui.button.ButtonMultiplexer;
@@ -42,6 +44,9 @@ public class FirstScreen implements Screen {
     private ClickableButton spinBtn;
     private Texture allDigits;
     private ButtonMultiplexer btnPlexer;
+    Wallet wallet;
+    private Texture coinTexture;
+    private CoinStacksDisplay coinStacks;
 
     @Override
     public void show() {
@@ -74,12 +79,20 @@ public class FirstScreen implements Screen {
             symbolNameToTexture,
             machineMask
         );
+        bet = 1;
+        wallet = new Wallet(100);
+        coinTexture = new Texture(Gdx.files.internal("gold-coin.png"));
+        coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18));
+        coinStacks.addCoins(wallet.getFunds());
 
         bet1BtnTexture = new Texture(Gdx.files.internal("Bet1.png"));
         bet1Btn = new ClickableButton(bet1BtnTexture, 1, 14, 5 , 3);
         bet1Btn.addSubscriber(new ButtonSubscriber() {
             @Override
             public void onClick(ClickableButton clickableButton) {
+                if (!wallet.hasEnoughToBet(bet + 1)) {
+                    return;
+                }
                 bet +=1;
                 if (bet > 5) bet = 1;
             }
@@ -89,7 +102,11 @@ public class FirstScreen implements Screen {
         betMaxBtn.addSubscriber(new ButtonSubscriber() {
             @Override
             public void onClick(ClickableButton clickableButton) {
-                bet = 5;
+                if (wallet.hasEnoughToBet(5)) {
+                    bet = 5;
+                } else {
+                    bet = wallet.getFunds();
+                }
             }
         });
 
@@ -98,6 +115,12 @@ public class FirstScreen implements Screen {
         spinBtn.addSubscriber(new ButtonSubscriber() {
             @Override
             public void onClick(ClickableButton clickableButton) {
+                if (!wallet.hasEnoughToBet(bet)) {
+                    // NO! Do some sort of interaction to show they can't
+                    return;
+                }
+                wallet.subtractAmount(bet);
+                coinStacks.removeCoins(bet);
                 reelsPanel.startSpinning();
             }
         });
@@ -127,6 +150,8 @@ public class FirstScreen implements Screen {
         betMaxBtn.draw(batch);
         spinBtn.draw(batch);
         numberRenderer.draw(batch, bet, 2, 1);
+        coinStacks.draw(batch);
+        numberRenderer.draw(batch, wallet.getFunds(), 25.5f, 0);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
