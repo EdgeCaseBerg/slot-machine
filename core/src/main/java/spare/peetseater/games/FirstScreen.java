@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import spare.peetseater.games.slots.core.SlotMachine;
 import spare.peetseater.games.slots.core.SymbolNameMap;
 import spare.peetseater.games.slots.core.Wallet;
+import spare.peetseater.games.slots.ui.ReelsSubscriber;
 import spare.peetseater.games.slots.ui.coins.CoinStacksDisplay;
 import spare.peetseater.games.slots.ui.NumberRenderer;
 import spare.peetseater.games.slots.ui.ReelsPanel;
@@ -73,17 +74,26 @@ public class FirstScreen implements Screen {
         symbolNameToTexture.put(symbolMap.getTwoBar(), new Texture(Gdx.files.internal("TwoBar.png")));
         symbolNameToTexture.put(symbolMap.getThreeBar(), new Texture(Gdx.files.internal("ThreeBar.png")));
         symbolNameToTexture.put(symbolMap.getBlank(), new Texture(Gdx.files.internal("Blank.png")));
+
+        bet = 1;
+        wallet = new Wallet(100);
+        coinTexture = new Texture(Gdx.files.internal("gold-coin.png"));
+        coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18));
+        coinStacks.addCoins(wallet.getFunds());
+
         Texture machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
         reelsPanel = new ReelsPanel(
             slotMachine,
             symbolNameToTexture,
             machineMask
         );
-        bet = 1;
-        wallet = new Wallet(100);
-        coinTexture = new Texture(Gdx.files.internal("gold-coin.png"));
-        coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18));
-        coinStacks.addCoins(wallet.getFunds());
+        reelsPanel.addSubscriber(new ReelsSubscriber() {
+            @Override
+            public void onSpinComplete() {
+                wallet.awardAmount(bet * slotMachine.payout());
+                coinStacks.addCoins(bet * slotMachine.payout());
+            }
+        });
 
         bet1BtnTexture = new Texture(Gdx.files.internal("Bet1.png"));
         bet1Btn = new ClickableButton(bet1BtnTexture, 1, 14, 5 , 3);

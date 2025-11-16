@@ -1,14 +1,16 @@
 package spare.peetseater.games.slots.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import spare.peetseater.games.slots.core.SlotMachine;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Flow;
 
 public class ReelsPanel {
     private SlotMachine slotMachine;
@@ -18,6 +20,7 @@ public class ReelsPanel {
 
     Texture machineMask;
     Optional<TimedAccumulator> maybeSpin;
+    List<ReelsSubscriber> subscribers;
 
     public ReelsPanel(
         SlotMachine slotMachine,
@@ -47,6 +50,11 @@ public class ReelsPanel {
             symbolNameToTexture
         );
         this.maybeSpin = Optional.empty();
+        this.subscribers = new LinkedList<>();
+    }
+
+    public void addSubscriber(ReelsSubscriber reelsSubscriber) {
+        this.subscribers.add(reelsSubscriber);
     }
 
     public void update(float delta) {
@@ -60,7 +68,6 @@ public class ReelsPanel {
 
         if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
             stopSpinning();
-            // emit an event to let the system know to award the amount of money
         }
     }
 
@@ -69,8 +76,9 @@ public class ReelsPanel {
         secondReel.stopReel();
         thirdReel.stopReel();
         maybeSpin = Optional.empty();
-        int payout = slotMachine.payout();
-        Gdx.app.log("PAYOUT", "$" + payout);
+        for (ReelsSubscriber subscriber : subscribers) {
+            subscriber.onSpinComplete();
+        }
     }
 
     public void startSpinning() {
