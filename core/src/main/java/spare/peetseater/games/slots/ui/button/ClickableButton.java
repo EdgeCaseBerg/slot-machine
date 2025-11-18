@@ -17,6 +17,7 @@ public class ClickableButton {
     private final float width;
     private final float height;
     private final List<ButtonSubscriber> subscribers;
+    private boolean isDisabled;
 
     public ClickableButton(Texture btnTexture, float x, float y, float width, float height) {
         this.btnTexture = btnTexture;
@@ -25,6 +26,7 @@ public class ClickableButton {
         this.width = width;
         this.height = height;
         this.subscribers = new LinkedList<>();
+        this.isDisabled = false;
     }
 
     public void addSubscriber(ButtonSubscriber buttonSubscriber) {
@@ -52,8 +54,19 @@ public class ClickableButton {
     }
     public void up() {
         positionBehavior = new StationaryPosition(initialPosition.x, initialPosition.y);
+        if (isDisabled) {
+            return;
+        }
         for (ButtonSubscriber subscriber : subscribers) {
             subscriber.onClick(this);
         }
+    }
+
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        isDisabled = disabled;
     }
 }

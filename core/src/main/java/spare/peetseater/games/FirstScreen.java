@@ -92,6 +92,7 @@ public class FirstScreen implements Screen {
             public void onSpinComplete() {
                 wallet.awardAmount(bet * slotMachine.payout());
                 coinStacks.addCoins(bet * slotMachine.payout());
+                spinBtn.setDisabled(false);
             }
         });
 
@@ -129,6 +130,7 @@ public class FirstScreen implements Screen {
                     // NO! Do some sort of interaction to show they can't
                     return;
                 }
+                spinBtn.setDisabled(true);
                 wallet.subtractAmount(bet);
                 coinStacks.removeCoins(bet);
                 reelsPanel.startSpinning();
