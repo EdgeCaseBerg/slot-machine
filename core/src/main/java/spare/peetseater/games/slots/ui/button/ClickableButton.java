@@ -14,14 +14,16 @@ public class ClickableButton {
     private final Texture btnTexture;
     private PositionBehavior positionBehavior;
     private final Vector2 initialPosition;
-    private final float width;
-    private final float height;
+    private float width;
+    private float height;
+    private float offset;
     private final List<ButtonSubscriber> subscribers;
     private boolean isDisabled;
 
     public ClickableButton(Texture btnTexture, float x, float y, float width, float height) {
         this.btnTexture = btnTexture;
         this.initialPosition = new Vector2(x, y);
+        this.offset = 0;
         this.positionBehavior = new StationaryPosition(x, y);
         this.width = width;
         this.height = height;
@@ -35,7 +37,7 @@ public class ClickableButton {
 
     public void draw(SpriteBatch batch) {
         Vector2 p = positionBehavior.getPosition();
-        batch.draw(btnTexture, p.x, p.y, width, height);
+        batch.draw(btnTexture, p.x - offset, p.y - offset, width + offset*2, height + offset*2);
     }
 
     public void update(float delta) {
@@ -50,9 +52,10 @@ public class ClickableButton {
     }
 
     public void down() {
-        positionBehavior = new StationaryPosition(initialPosition.x + MathUtils.random(), initialPosition.y + MathUtils.random());
+        offset = 0.25f;
     }
     public void up() {
+        offset = 0;
         positionBehavior = new StationaryPosition(initialPosition.x, initialPosition.y);
         if (isDisabled) {
             return;
