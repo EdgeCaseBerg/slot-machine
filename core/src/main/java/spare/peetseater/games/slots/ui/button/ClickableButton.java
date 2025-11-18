@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import spare.peetseater.games.slots.ui.behavior.PositionBehavior;
 import spare.peetseater.games.slots.ui.behavior.StationaryPosition;
-import spare.peetseater.games.slots.ui.behavior.VerticallySpinningPosition;
 
 import java.util.LinkedList;
 import java.util.List;
