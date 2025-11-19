@@ -72,4 +72,12 @@ public class ClickableButton {
     public void setDisabled(boolean disabled) {
         isDisabled = disabled;
     }
+
+    public boolean isHeld() {
+        return offset != 0;
+    }
+
+    public void resetClick() {
+        offset = 0;
+    }
 }

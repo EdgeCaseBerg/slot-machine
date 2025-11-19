@@ -58,6 +58,8 @@ public class ButtonMultiplexer implements InputProcessor {
             if (btn.isPointInside(worldXYZ.x, worldXYZ.y)) {
                 btn.up();
                 touched = true;
+            } else {
+                btn.resetClick();
             }
         }
         return touched;
@@ -75,7 +77,14 @@ public class ButtonMultiplexer implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        return false;
+        Vector3 worldXYZ = camera.unproject(new Vector3(screenX, screenY, 0));
+        boolean touched = false;
+        for (ClickableButton btn : buttons) {
+            if (!btn.isPointInside(worldXYZ.x, worldXYZ.y) && btn.isHeld()) {
+                btn.resetClick();
+            }
+        }
+        return touched;
     }
 
     @Override
