@@ -2,6 +2,7 @@ package spare.peetseater.games.slots.ui.coins;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 class CoinStack {
     private final Texture coinTexture;
@@ -39,5 +40,9 @@ class CoinStack {
         for (float i = y; i < topPosition; i += coinHeight) {
             batch.draw(coinTexture, x, i, 1, coinHeight);
         }
+    }
+
+    public Vector2 getPosition() {
+        return new Vector2(x, topPosition);
     }
 }

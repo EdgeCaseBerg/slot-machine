@@ -153,6 +153,7 @@ public class FirstScreen implements Screen {
         camera.update();
         reelsPanel.update(delta);
         btnPlexer.update(delta);
+        coinStacks.update(delta);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

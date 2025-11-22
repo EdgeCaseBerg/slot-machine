@@ -5,20 +5,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CoinStacksDisplay {
+    private final Texture coinTexture;
     private final Vector2 xRange;
     private final Vector2 yRange;
     private static final float coinHeight = 0.2f;
     public List<CoinStack> stacks;
+    public List<FallingCoin> currentlyFalling;
 
     public CoinStacksDisplay(Texture coinTexture, Vector2 xRange, Vector2 yRange) {
+        this.coinTexture = coinTexture;
         this.xRange = xRange;
         this.yRange = yRange;
         this.stacks = new LinkedList<>();
+        currentlyFalling = new LinkedList<>();
         float xStep = 0.5f;
         assert(xRange.x < xRange.y);
         assert(yRange.x < yRange.y);
@@ -32,7 +37,8 @@ public class CoinStacksDisplay {
     public void addCoins(int numberOfCoins) {
         for (int i = 0; i < numberOfCoins; i++) {
             CoinStack stack = stacks.get(MathUtils.random(0, stacks.size() - 1));
-            stack.addCoin();
+            currentlyFalling.add(new FallingCoin(stack, coinTexture, coinHeight));
+//            stack.addCoin();
         }
     }
 
@@ -52,6 +58,19 @@ public class CoinStacksDisplay {
     public void draw(SpriteBatch batch) {
         for (CoinStack stack : stacks) {
             stack.draw(batch);
+        }
+        for (FallingCoin coin : currentlyFalling) {
+            coin.draw(batch);
+        }
+    }
+
+    public void update(float delta) {
+        Iterator<FallingCoin> iter = currentlyFalling.iterator();
+        for (FallingCoin coin = iter.next(); iter.hasNext(); coin = iter.next()) {
+            coin.update(delta);
+            if (coin.readyToBeRemoved()) {
+                iter.remove();
+            }
         }
     }
 
