@@ -171,10 +171,6 @@ public class FirstScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            reelsPanel.startSpinning();
-        }
     }
 
     @Override
