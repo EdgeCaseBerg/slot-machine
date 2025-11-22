@@ -80,6 +80,7 @@ public class FirstScreen implements Screen {
         coinTexture = new Texture(Gdx.files.internal("gold-coin.png"));
         coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18));
         coinStacks.addCoins(wallet.getFunds());
+        coinStacks.update(1000);
 
         Texture machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
         reelsPanel = new ReelsPanel(
