@@ -19,6 +19,8 @@ public class ClickableButton {
     private float offset;
     private final List<ButtonSubscriber> subscribers;
     private boolean isDisabled;
+    private boolean isHovering;
+    private float accum;
 
     public ClickableButton(Texture btnTexture, float x, float y, float width, float height) {
         this.btnTexture = btnTexture;
@@ -37,11 +39,23 @@ public class ClickableButton {
 
     public void draw(SpriteBatch batch) {
         Vector2 p = positionBehavior.getPosition();
-        batch.draw(btnTexture, p.x - offset, p.y - offset, width + offset*2, height + offset*2);
+        float y = p.y;
+        float dynamicOffset = 0;
+        if (isHovering) {
+            dynamicOffset = MathUtils.lerp(0.0f, 0.25f, (float)Math.abs(Math.sin(accum)));
+        }
+        batch.draw(
+            btnTexture,
+            p.x - offset - dynamicOffset,
+            y - offset - dynamicOffset,
+            width + (offset+dynamicOffset)*2,
+            height + (offset+dynamicOffset)*2
+        );
     }
 
     public void update(float delta) {
         positionBehavior.update(delta);
+        accum+= delta;
     }
 
     public boolean isPointInside(float x, float y) {
@@ -79,5 +93,13 @@ public class ClickableButton {
 
     public void resetClick() {
         offset = 0;
+    }
+
+    public void hover() {
+        isHovering = true;
+    }
+
+    public void stopHover() {
+        isHovering = false;
     }
 }

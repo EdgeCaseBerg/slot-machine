@@ -82,6 +82,10 @@ public class ButtonMultiplexer implements InputProcessor {
         for (ClickableButton btn : buttons) {
             if (!btn.isPointInside(worldXYZ.x, worldXYZ.y) && btn.isHeld()) {
                 btn.resetClick();
+            } else if (btn.isPointInside(worldXYZ.x, worldXYZ.y)) {
+                btn.hover();
+            } else {
+                btn.stopHover();
             }
         }
         return touched;
