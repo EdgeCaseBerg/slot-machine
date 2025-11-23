@@ -12,7 +12,7 @@ public class FallingCoin {
     private final float coinHeight;
     private final Vector2 end;
     private final CoinStack stack;
-    PositionBehavior positionBehavior;
+    private final PositionBehavior positionBehavior;
     private boolean readyToBeRemoved;
 
     public FallingCoin(CoinStack stackToAddToWhenFinishedFalling, Texture coinTexture, float coinHeight) {

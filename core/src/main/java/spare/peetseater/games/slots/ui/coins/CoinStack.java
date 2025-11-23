@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-class CoinStack {
+public class CoinStack {
     private final Texture coinTexture;
     private float topPosition;
     private final float coinHeight;

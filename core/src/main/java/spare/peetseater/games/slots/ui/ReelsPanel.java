@@ -1,6 +1,5 @@
 package spare.peetseater.games.slots.ui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -10,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Flow;
 
 public class ReelsPanel {
     private SlotMachine slotMachine;
@@ -72,6 +70,7 @@ public class ReelsPanel {
     }
 
     public void stopSpinning() {
+        // return time to stop from each, then take max and accum timer on spin complete
         firstReel.stopReel();
         secondReel.stopReel();
         thirdReel.stopReel();

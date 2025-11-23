@@ -128,7 +128,7 @@ public class FirstScreen implements Screen {
                 if (bet > 5) bet = 1;
             }
         });
-        Texture betMaxBtnTexture = new Texture(Gdx.files.internal("BetMax.png"));
+        betMaxBtnTexture = new Texture(Gdx.files.internal("BetMax.png"));
         betMaxBtn = new ClickableButton(betMaxBtnTexture, 1,10,5,3);
         betMaxBtn.addSubscriber(new ButtonSubscriber() {
             @Override
