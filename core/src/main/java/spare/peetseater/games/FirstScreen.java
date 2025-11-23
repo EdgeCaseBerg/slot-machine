@@ -22,6 +22,7 @@ import spare.peetseater.games.slots.ui.ReelsPanel;
 import spare.peetseater.games.slots.ui.button.ButtonMultiplexer;
 import spare.peetseater.games.slots.ui.button.ButtonSubscriber;
 import spare.peetseater.games.slots.ui.button.ClickableButton;
+import spare.peetseater.games.slots.ui.coins.ResultDisplay;
 
 import java.util.*;
 
@@ -37,6 +38,8 @@ public class FirstScreen implements Screen {
     private Texture spinBtnTexture;
     private Texture bet1BtnTexture;
     private Texture betMaxBtnTexture;
+    private Texture youWonTexture;
+    private Texture tryAgainTexture;
     private ClickableButton bet1Btn;
     private ClickableButton betMaxBtn;
     private TextureRegion[] digits;
@@ -48,6 +51,7 @@ public class FirstScreen implements Screen {
     Wallet wallet;
     private Texture coinTexture;
     private CoinStacksDisplay coinStacks;
+    private ResultDisplay youWonDisplay;
 
     @Override
     public void show() {
@@ -74,6 +78,8 @@ public class FirstScreen implements Screen {
         symbolNameToTexture.put(symbolMap.getTwoBar(), new Texture(Gdx.files.internal("TwoBar.png")));
         symbolNameToTexture.put(symbolMap.getThreeBar(), new Texture(Gdx.files.internal("ThreeBar.png")));
         symbolNameToTexture.put(symbolMap.getBlank(), new Texture(Gdx.files.internal("Blank.png")));
+        allDigits = new Texture(Gdx.files.internal("digits.png"));
+        numberRenderer = new NumberRenderer(allDigits);
 
         bet = 1;
         wallet = new Wallet(100);
@@ -81,6 +87,11 @@ public class FirstScreen implements Screen {
         coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18));
         coinStacks.addCoins(wallet.getFunds());
         coinStacks.update(1000);
+
+        // declare one thats already done....
+        youWonTexture = new Texture(Gdx.files.internal("YouWon.png"));
+        tryAgainTexture = new Texture(Gdx.files.internal("TryAgain.png"));
+        youWonDisplay = new ResultDisplay(youWonTexture, numberRenderer, 0, new Vector2(10, 10), 10);
 
         Texture machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
         reelsPanel = new ReelsPanel(
@@ -91,9 +102,17 @@ public class FirstScreen implements Screen {
         reelsPanel.addSubscriber(new ReelsSubscriber() {
             @Override
             public void onSpinComplete() {
-                wallet.awardAmount(bet * slotMachine.payout());
-                coinStacks.addCoins(bet * slotMachine.payout());
+                int coinsWon = bet * slotMachine.payout() + 10;
+                wallet.awardAmount(coinsWon);
+                coinStacks.addCoins(coinsWon);
                 spinBtn.setDisabled(false);
+                youWonDisplay = new ResultDisplay(
+                    coinsWon == 0 ? tryAgainTexture : youWonTexture,
+                    numberRenderer,
+                    coinsWon,
+                    (new Vector2(viewport.getWorldWidth(), 0)).scl(0.5f),
+                    4f
+                );
             }
         });
 
@@ -143,8 +162,6 @@ public class FirstScreen implements Screen {
         btnPlexer.addButton(spinBtn);
         Gdx.input.setInputProcessor(btnPlexer);
 
-        allDigits = new Texture(Gdx.files.internal("digits.png"));
-        numberRenderer = new NumberRenderer(allDigits);
     }
 
     @Override
@@ -155,17 +172,18 @@ public class FirstScreen implements Screen {
         reelsPanel.update(delta);
         btnPlexer.update(delta);
         coinStacks.update(delta);
+        youWonDisplay.update(delta);
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         reelsPanel.draw(batch);
-
         bet1Btn.draw(batch);
         betMaxBtn.draw(batch);
         spinBtn.draw(batch);
         numberRenderer.draw(batch, bet, 2, 1);
         coinStacks.draw(batch);
         numberRenderer.draw(batch, wallet.getFunds(), 25.5f, 0);
+        youWonDisplay.draw(batch);
         batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -204,6 +222,8 @@ public class FirstScreen implements Screen {
         bet1BtnTexture.dispose();
         betMaxBtnTexture.dispose();
         spinBtnTexture.dispose();
+        youWonTexture.dispose();
+        tryAgainTexture.dispose();
         for (Map.Entry<String, Texture> entry : symbolNameToTexture.entrySet()) {
             entry.getValue().dispose();
         }
