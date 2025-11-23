@@ -94,7 +94,7 @@ public class ReelColumn {
         }
     }
 
-    public void stopReel() {
+    public float stopReel() {
         isSpinning = false;
 
         // We'll need to know where to start extending the reel out so that the
@@ -127,6 +127,7 @@ public class ReelColumn {
         int i = 0;
         float time = 1f;
         float stopReelWithinSeconds = time * symbols.size();
+        Gdx.app.log("TIME", stopReelWithinSeconds + "");
         for (Iterator<ReelSymbol> it = iter; it.hasNext(); i++) {
             float stoppingPosition = position.y + i * reelSize;
             ReelSymbol symbol = iter.next();
@@ -138,5 +139,6 @@ public class ReelColumn {
                 )
             );
         }
+        return 2;
     }
 }

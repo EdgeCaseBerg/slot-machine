@@ -1,5 +1,6 @@
 package spare.peetseater.games.slots.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -19,6 +20,7 @@ public class ReelsPanel {
     Texture machineMask;
     Optional<TimedAccumulator> maybeSpin;
     List<ReelsSubscriber> subscribers;
+    Optional<TimedAccumulator> maybeStoppedEvent;
 
     public ReelsPanel(
         SlotMachine slotMachine,
@@ -48,6 +50,7 @@ public class ReelsPanel {
             symbolNameToTexture
         );
         this.maybeSpin = Optional.empty();
+        this.maybeStoppedEvent = Optional.empty();
         this.subscribers = new LinkedList<>();
     }
 
@@ -59,6 +62,9 @@ public class ReelsPanel {
         maybeSpin.ifPresent((spin) -> {
             spin.update(delta);
         });
+        maybeStoppedEvent.ifPresent((countdown) -> {
+            countdown.update(delta);
+        });
 
         firstReel.update(delta);
         secondReel.update(delta);
@@ -67,17 +73,24 @@ public class ReelsPanel {
         if (maybeSpin.isPresent() && maybeSpin.get().isDone()) {
             stopSpinning();
         }
+        if (maybeStoppedEvent.isPresent() && maybeStoppedEvent.get().isDone()) {
+            for (ReelsSubscriber subscriber : subscribers) {
+                subscriber.onSpinComplete();
+            }
+            maybeStoppedEvent = Optional.empty();
+        }
     }
 
     public void stopSpinning() {
         // return time to stop from each, then take max and accum timer on spin complete
-        firstReel.stopReel();
-        secondReel.stopReel();
-        thirdReel.stopReel();
         maybeSpin = Optional.empty();
-        for (ReelsSubscriber subscriber : subscribers) {
-            subscriber.onSpinComplete();
-        }
+        float eventIn = Math.max(Math.max(
+            firstReel.stopReel(),
+            secondReel.stopReel()),
+            thirdReel.stopReel()
+        );
+        Gdx.app.log("STOPPING IN", eventIn + "s");
+        this.maybeStoppedEvent = Optional.of(new TimedAccumulator(eventIn));
     }
 
     public void startSpinning() {
