@@ -91,7 +91,7 @@ public class FirstScreen implements Screen {
         // declare one thats already done....
         youWonTexture = new Texture(Gdx.files.internal("YouWon.png"));
         tryAgainTexture = new Texture(Gdx.files.internal("TryAgain.png"));
-        youWonDisplay = new ResultDisplay(youWonTexture, numberRenderer, 0, new Vector2(10, 10), 10);
+        youWonDisplay = new ResultDisplay(youWonTexture, numberRenderer, 0, new Vector2(10, 10), 0);
 
         Texture machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
         reelsPanel = new ReelsPanel(
