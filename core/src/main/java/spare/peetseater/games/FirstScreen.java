@@ -101,7 +101,7 @@ public class FirstScreen implements Screen {
         tryAgainTexture = new Texture(Gdx.files.internal("TryAgain.png"));
         youWonDisplay = new ResultDisplay(youWonTexture, numberRenderer, 0, new Vector2(10, 10), 0);
 
-        Texture machineMask = new Texture(Gdx.files.internal("MachineMaskMini.png"));
+        Texture machineMask = new Texture(Gdx.files.internal("Machine.png"));
         reelsPanel = new ReelsPanel(
             slotMachine,
             symbolNameToTexture,
