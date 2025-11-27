@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import spare.peetseater.games.slots.ui.sound.SoundPlayer;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,14 +15,16 @@ public class CoinStacksDisplay {
     private final Texture coinTexture;
     private final Vector2 xRange;
     private final Vector2 yRange;
+    private final SoundPlayer soundPlayer;
     private static final float coinHeight = 0.2f;
     public List<CoinStack> stacks;
     public List<FallingCoin> currentlyFalling;
 
-    public CoinStacksDisplay(Texture coinTexture, Vector2 xRange, Vector2 yRange) {
+    public CoinStacksDisplay(Texture coinTexture, Vector2 xRange, Vector2 yRange, SoundPlayer soundPlayer) {
         this.coinTexture = coinTexture;
         this.xRange = xRange;
         this.yRange = yRange;
+        this.soundPlayer = soundPlayer;
         this.stacks = new LinkedList<>();
         currentlyFalling = new LinkedList<>();
         float xStep = 0.5f;
@@ -35,10 +38,10 @@ public class CoinStacksDisplay {
     }
 
     public void addCoins(int numberOfCoins) {
+        soundPlayer.playPlink();
         for (int i = 0; i < numberOfCoins; i++) {
             CoinStack stack = stacks.get(MathUtils.random(0, stacks.size() - 1));
             currentlyFalling.add(new FallingCoin(stack, coinTexture, coinHeight));
-//            stack.addCoin();
         }
     }
 
@@ -69,6 +72,8 @@ public class CoinStacksDisplay {
         for (FallingCoin coin = iter.next(); iter.hasNext(); coin = iter.next()) {
             coin.update(delta);
             if (coin.readyToBeRemoved()) {
+                soundPlayer.stopPlink();
+                soundPlayer.playPlonk();
                 iter.remove();
             }
         }

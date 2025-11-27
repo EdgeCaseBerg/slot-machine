@@ -87,7 +87,7 @@ public class FirstScreen implements Screen {
         bet = 1;
         wallet = new Wallet(100);
         coinTexture = new Texture(Gdx.files.internal("gold-coin.png"));
-        coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18));
+        coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18), soundPlayer);
         coinStacks.addCoins(wallet.getFunds());
         coinStacks.update(1000);
 

@@ -37,7 +37,7 @@ public class SoundPlayer {
     }
 
     public void playPlink() {
-        plink.play();
+        plink.loop();
     }
 
     public void playPlonk() {
