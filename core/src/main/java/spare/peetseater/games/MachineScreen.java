@@ -93,6 +93,7 @@ public class MachineScreen implements Screen {
         coinTexture = new Texture(Gdx.files.internal("gold-coin.png"));
         coinStacks = new CoinStacksDisplay(coinTexture, new Vector2(25, 32), new Vector2(0, 18), soundPlayer);
         coinStacks.addCoins(wallet.getFunds());
+        soundPlayer.stopAll();
         coinStacks.update(1000);
 
         // declare one thats already done....
