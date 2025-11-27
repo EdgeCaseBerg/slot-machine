@@ -77,7 +77,7 @@ public class MachineScreen implements Screen {
         viewport = new FitViewport(32, 18, camera);
         camera.setToOrtho(false);
         camera.update();
-        symbolNameToTexture = new Hashtable<>();
+        symbolNameToTexture = new HashMap<>();
         symbolNameToTexture.put(symbolMap.getRedSeven(), new Texture(Gdx.files.internal("RedSeven.png")));
         symbolNameToTexture.put(symbolMap.getWhiteSeven(), new Texture(Gdx.files.internal("WhiteSeven.png")));
         symbolNameToTexture.put(symbolMap.getBlueSeven(), new Texture(Gdx.files.internal("BlueSeven.png")));

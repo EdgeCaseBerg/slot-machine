@@ -1,6 +1,7 @@
 package spare.peetseater.games.slots.core;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class PayoutTable {
     }
 
     protected void loadPayoutTable(SymbolNameMap symbolNameMap) {
-        Map<String, Integer> payoutTable = new Hashtable<>();
+        Map<String, Integer> payoutTable = new HashMap<>();
         payoutTable.put(
             keyFor(symbolNameMap.getRedSeven(), symbolNameMap.getWhiteSeven(), symbolNameMap.getBlueSeven()), 2400
         );
