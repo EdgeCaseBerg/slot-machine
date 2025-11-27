@@ -1,4 +1,120 @@
 package spare.peetseater.games;
 
-public class TitleScreen {
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import spare.peetseater.games.slots.ui.button.ButtonMultiplexer;
+import spare.peetseater.games.slots.ui.button.ButtonSubscriber;
+import spare.peetseater.games.slots.ui.button.ClickableButton;
+import spare.peetseater.games.slots.ui.sound.SoundPlayer;
+
+public class TitleScreen implements Screen {
+    private final GameRunner gameRunner;
+    private  SoundPlayer soundPlayer;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
+    private FitViewport viewport;
+    private Texture titleTexture;
+    private Texture startBtnTexture;
+    private Texture quitBtnTexture;
+    private ClickableButton quitBtn;
+    private ClickableButton startBtn;
+    private ButtonMultiplexer btnPlexer;
+
+    public TitleScreen(GameRunner gameRunner) {
+        this.gameRunner = gameRunner;
+    }
+
+    @Override
+    public void show() {
+        soundPlayer = new SoundPlayer();
+        batch = new SpriteBatch();
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(32, 18, camera);
+        camera.setToOrtho(false);
+        camera.update();
+        titleTexture = new Texture(Gdx.files.internal("gamble.png"));
+        startBtnTexture = new Texture(Gdx.files.internal("start.png"));
+        startBtn = new ClickableButton(startBtnTexture, 7, 2, 6, 4);
+        quitBtnTexture = new Texture(Gdx.files.internal("quit1.png"));
+        quitBtn = new ClickableButton(quitBtnTexture, 18, 2, 6, 4);
+
+        btnPlexer = new ButtonMultiplexer(camera);
+        btnPlexer.addButton(startBtn);
+        btnPlexer.addButton(quitBtn);
+        Gdx.input.setInputProcessor(btnPlexer);
+
+        startBtn.addSubscriber(new ButtonSubscriber() {
+            @Override
+            public void onClick(ClickableButton clickableButton) {
+                gameRunner.setScreen(new FirstScreen(gameRunner));
+                soundPlayer.playClick();
+            }
+        });
+        quitBtn.addSubscriber(new ButtonSubscriber() {
+            @Override
+            public void onClick(ClickableButton clickableButton) {
+                soundPlayer.playClack();
+                Gdx.app.exit();
+            }
+        });
+    }
+
+    @Override
+    public void render(float delta) {
+        btnPlexer.update(delta);
+
+        ScreenUtils.clear(Color.BLACK);
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(titleTexture, 0, 0, 32, 18);
+        quitBtn.draw(batch);
+        startBtn.draw(batch);
+        batch.end();
+
+         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            Gdx.app.exit();
+        }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
+        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
+        if(width <= 0 || height <= 0) return;
+
+        // Resize your screen here. The parameters represent the new window size.
+        viewport.update(width, height);
+        viewport.apply(true);
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        startBtnTexture.dispose();
+        titleTexture.dispose();
+        quitBtnTexture.dispose();
+        soundPlayer.dispose();
+    }
 }
