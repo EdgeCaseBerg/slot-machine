@@ -35,6 +35,7 @@ public class GameOver implements Screen {
     @Override
     public void show() {
         soundPlayer = new SoundPlayer();
+        soundPlayer.playGameOver();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(32, 18, camera);
@@ -55,11 +56,13 @@ public class GameOver implements Screen {
             @Override
             public void onClick(ClickableButton clickableButton) {
                 gameRunner.setScreen(new FirstScreen(gameRunner));
+                soundPlayer.playClick();
             }
         });
         quitBtn.addSubscriber(new ButtonSubscriber() {
             @Override
             public void onClick(ClickableButton clickableButton) {
+                soundPlayer.playClack();
                 Gdx.app.exit();
             }
         });
@@ -111,6 +114,9 @@ public class GameOver implements Screen {
 
     @Override
     public void dispose() {
-
+        againBtnTexture.dispose();
+        gameOverTexture.dispose();
+        quitBtnTexture.dispose();
+        soundPlayer.dispose();
     }
 }

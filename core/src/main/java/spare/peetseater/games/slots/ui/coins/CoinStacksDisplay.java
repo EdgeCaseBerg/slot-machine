@@ -38,7 +38,9 @@ public class CoinStacksDisplay {
     }
 
     public void addCoins(int numberOfCoins) {
-        soundPlayer.playPlink();
+        if (numberOfCoins > 0) {
+            soundPlayer.playPlink();
+        }
         for (int i = 0; i < numberOfCoins; i++) {
             CoinStack stack = stacks.get(MathUtils.random(0, stacks.size() - 1));
             currentlyFalling.add(new FallingCoin(stack, coinTexture, coinHeight));
