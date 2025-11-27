@@ -23,6 +23,7 @@ import spare.peetseater.games.slots.ui.button.ButtonMultiplexer;
 import spare.peetseater.games.slots.ui.button.ButtonSubscriber;
 import spare.peetseater.games.slots.ui.button.ClickableButton;
 import spare.peetseater.games.slots.ui.coins.ResultDisplay;
+import spare.peetseater.games.slots.ui.sound.SoundPlayer;
 
 import java.util.*;
 
@@ -52,6 +53,7 @@ public class FirstScreen implements Screen {
     private Texture coinTexture;
     private CoinStacksDisplay coinStacks;
     private ResultDisplay youWonDisplay;
+    private SoundPlayer soundPlayer;
 
     @Override
     public void show() {
@@ -65,6 +67,7 @@ public class FirstScreen implements Screen {
             "red_seven"
         );
         slotMachine = new SlotMachine(symbolMap);
+        soundPlayer = new SoundPlayer();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(32, 18, camera);
@@ -102,10 +105,16 @@ public class FirstScreen implements Screen {
         reelsPanel.addSubscriber(new ReelsSubscriber() {
             @Override
             public void onSpinComplete() {
-                int coinsWon = bet * slotMachine.payout() + 10;
+                int coinsWon = bet * slotMachine.payout() + 100;
                 wallet.awardAmount(coinsWon);
                 coinStacks.addCoins(coinsWon);
                 spinBtn.setDisabled(false);
+                soundPlayer.stopWeeWoo();
+                if (coinsWon == 0) {
+                    soundPlayer.playTryAgain();
+                } else {
+                    soundPlayer.playWin();
+                }
                 youWonDisplay = new ResultDisplay(
                     coinsWon == 0 ? tryAgainTexture : youWonTexture,
                     numberRenderer,
@@ -126,6 +135,7 @@ public class FirstScreen implements Screen {
                 }
                 bet +=1;
                 if (bet > 5) bet = 1;
+                soundPlayer.playBeep();
             }
         });
         betMaxBtnTexture = new Texture(Gdx.files.internal("BetMax.png"));
@@ -135,6 +145,7 @@ public class FirstScreen implements Screen {
             public void onClick(ClickableButton clickableButton) {
                 if (wallet.hasEnoughToBet(5)) {
                     bet = 5;
+                    soundPlayer.playBoop();
                 } else {
                     bet = wallet.getFunds();
                 }
@@ -153,6 +164,7 @@ public class FirstScreen implements Screen {
                 spinBtn.setDisabled(true);
                 wallet.subtractAmount(bet);
                 coinStacks.removeCoins(bet);
+                soundPlayer.playWeeWoo();
                 reelsPanel.startSpinning();
             }
         });
