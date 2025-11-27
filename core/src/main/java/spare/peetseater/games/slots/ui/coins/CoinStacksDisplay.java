@@ -71,11 +71,15 @@ public class CoinStacksDisplay {
 
     public void update(float delta) {
         Iterator<FallingCoin> iter = currentlyFalling.iterator();
+        boolean playOnce = false;
         for (FallingCoin coin = iter.next(); iter.hasNext(); coin = iter.next()) {
             coin.update(delta);
             if (coin.readyToBeRemoved()) {
-                soundPlayer.stopPlink();
-                soundPlayer.playPlonk();
+                if (!playOnce) {
+                    soundPlayer.stopPlink();
+                    soundPlayer.playPlonk();
+                }
+                playOnce = true;
                 iter.remove();
             }
         }
