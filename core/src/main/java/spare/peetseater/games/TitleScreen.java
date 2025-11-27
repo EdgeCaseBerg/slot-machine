@@ -34,6 +34,7 @@ public class TitleScreen implements Screen {
     @Override
     public void show() {
         soundPlayer = new SoundPlayer();
+        soundPlayer.stopAll();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         viewport = new FitViewport(32, 18, camera);

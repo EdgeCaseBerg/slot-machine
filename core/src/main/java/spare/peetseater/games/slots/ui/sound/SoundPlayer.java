@@ -108,6 +108,19 @@ public class SoundPlayer {
         gameover.stop();
     }
 
+    public void stopAll() {
+        stopWin();
+        stopTryAgain();
+        stopPlink();
+        stopPlonk();
+        stopBeep();
+        stopBoop();
+        stopClick();
+        stopClack();
+        stopWeeWoo();
+        stopGameOver();
+    }
+
     public void dispose() {
         plink.dispose();
         plonk.dispose();

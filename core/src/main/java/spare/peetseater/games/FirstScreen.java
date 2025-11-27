@@ -184,7 +184,8 @@ public class FirstScreen implements Screen {
         btnPlexer.addButton(betMaxBtn);
         btnPlexer.addButton(spinBtn);
         Gdx.input.setInputProcessor(btnPlexer);
-
+        // Ensure the noise from the first coins being added doesn't play
+        soundPlayer.stopAll();
     }
 
     @Override
