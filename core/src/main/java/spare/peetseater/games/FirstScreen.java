@@ -30,6 +30,7 @@ import java.util.*;
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
 
+    private final GameRunner gameRunner;
     SpriteBatch batch;
     OrthographicCamera camera;
     Viewport viewport;
@@ -54,6 +55,10 @@ public class FirstScreen implements Screen {
     private CoinStacksDisplay coinStacks;
     private ResultDisplay youWonDisplay;
     private SoundPlayer soundPlayer;
+
+    public FirstScreen(GameRunner gameRunner) {
+        this.gameRunner = gameRunner;
+    }
 
     @Override
     public void show() {
@@ -105,7 +110,7 @@ public class FirstScreen implements Screen {
         reelsPanel.addSubscriber(new ReelsSubscriber() {
             @Override
             public void onSpinComplete() {
-                int coinsWon = bet * slotMachine.payout() + 100;
+                int coinsWon = bet * slotMachine.payout();
                 wallet.awardAmount(coinsWon);
                 coinStacks.addCoins(coinsWon);
                 spinBtn.setDisabled(false);
@@ -201,6 +206,10 @@ public class FirstScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
+
+        if (wallet.getFunds() == 0) {
+            gameRunner.setScreen(new GameOver(gameRunner));
+        }
     }
 
     @Override
@@ -240,5 +249,6 @@ public class FirstScreen implements Screen {
             entry.getValue().dispose();
         }
         allDigits.dispose();
+        soundPlayer.dispose();
     }
 }
