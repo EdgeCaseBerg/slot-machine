@@ -125,8 +125,14 @@ public class FirstScreen implements Screen {
                     numberRenderer,
                     coinsWon,
                     (new Vector2(viewport.getWorldWidth(), 0)).scl(0.5f),
-                    4f
+                    2f
                 );
+                if (wallet.getFunds() < bet) {
+                   bet = wallet.getFunds();
+                }
+                if (wallet.getFunds() == 0) {
+                    gameRunner.setScreen(new GameOver(gameRunner));
+                }
             }
         });
 
@@ -205,10 +211,6 @@ public class FirstScreen implements Screen {
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
-        }
-
-        if (wallet.getFunds() == 0) {
-            gameRunner.setScreen(new GameOver(gameRunner));
         }
     }
 
