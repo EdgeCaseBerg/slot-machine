@@ -27,8 +27,7 @@ import spare.peetseater.games.slots.ui.sound.SoundPlayer;
 
 import java.util.*;
 
-/** First screen of the application. Displayed after the application is created. */
-public class FirstScreen implements Screen {
+public class MachineScreen implements Screen {
 
     private final GameRunner gameRunner;
     SpriteBatch batch;
@@ -56,7 +55,7 @@ public class FirstScreen implements Screen {
     private ResultDisplay youWonDisplay;
     private SoundPlayer soundPlayer;
 
-    public FirstScreen(GameRunner gameRunner) {
+    public MachineScreen(GameRunner gameRunner) {
         this.gameRunner = gameRunner;
     }
 

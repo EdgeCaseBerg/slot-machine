@@ -55,7 +55,7 @@ public class GameOver implements Screen {
         againBtn.addSubscriber(new ButtonSubscriber() {
             @Override
             public void onClick(ClickableButton clickableButton) {
-                gameRunner.setScreen(new FirstScreen(gameRunner));
+                gameRunner.setScreen(new MachineScreen(gameRunner));
                 soundPlayer.playClick();
             }
         });
